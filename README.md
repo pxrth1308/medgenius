@@ -87,12 +87,25 @@ Before you begin, ensure you have the following installed on your system:
    The project follows a modular structure for better maintainability:
 
    ```
-   /src
-     /components    # Reusable UI components
-     /pages         # Application pages
-     /services      # API and backend service integrations
-     /utils         # Utility functions
-     /styles        # Global and component-specific styles
+   medgenius/
+         ├── app/                     # Next.js app directory
+         │   ├── dashboard/           # Dashboard page
+         │   ├── health-records/      # Health records page
+         │   ├── health-trends/       # Health trends page
+         │   ├── medicine-scanner/    # Medicine scanner page
+         │   ├── report-analysis/     # Report analysis page
+         │   ├── layout.tsx           # Root layout
+         │   └── globals.css          # Global styles
+         ├── components/              # Reusable UI components
+         │   ├── ui/                  # UI-specific components
+         │   └── theme-provider.tsx   # Theme provider
+         ├── lib/                     # Utility functions
+         ├── styles/                  # Tailwind CSS styles
+         ├── types/                   # TypeScript types
+         ├── public/                  # Static assets
+         ├── package.json             # Project dependencies and scripts
+         ├── tailwind.config.ts       # Tailwind CSS configuration
+         └── postcss.config.mjs       # PostCSS configuration
    ```
 
    ---
