@@ -2,6 +2,8 @@
 
 MedGenius is a healthcare assistant application designed to simplify healthcare management. It provides features like medical report analysis, health trends tracking, medicine scanning, and more.
 
+![MedGenius](https://github.com/thtahamid/medgenius/blob/main/medgenius.png?raw=true)
+
 This guide will walk you through setting up and running the project locally.
 
 ---
