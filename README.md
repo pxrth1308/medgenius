@@ -26,7 +26,7 @@ Before you begin, ensure you have the following installed on your system:
 - **Node.js** (v18 or later) - [Download Node.js](https://nodejs.org/)
 - **npm** (v9 or later) or **yarn** (v1.22 or later)
 - **Git** - [Download Git](https://git-scm.com/)
-- **PostgreSQL** (if using Supabase locally) - [Download PostgreSQL](https://www.postgresql.org/)
+- **Supabase** - Set up a Supabase project by visiting [Supabase](https://supabase.com/) and creating a new project. If using Supabase locally, ensure you have [PostgreSQL](https://www.postgresql.org/) installed.
 
 ---
 
