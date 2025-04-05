@@ -149,6 +149,26 @@ We welcome contributions! To contribute:
 3. Commit your changes and push the branch.
 4. Open a pull request with a detailed description of your changes.
 
+## Contributing with GitHub Actions
+
+Our project uses GitHub Actions for continuous integration. When you submit a pull request, the following checks will run automatically:
+
+1. Code linting
+2. Type checking
+3. Application build
+
+To ensure your pull request passes these checks:
+
+1. Fork the repository
+2. Create a new branch for your feature or bugfix
+3. Make your changes and commit them
+4. Run the following commands locally before pushing:
+   ```bash
+   npm run lint
+   npx tsc --noEmit
+   npm run build
+   ```
+
 ---
 
 ## License
