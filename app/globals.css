@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 162 47% 30%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 162 47% 30%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.gradient-green {
+  @apply bg-gradient-to-br from-green-500/20 via-green-400/10 to-teal-300/20;
+}
+
+.card-shadow {
+  @apply shadow-lg shadow-green-900/10;
+}
+
+.input-shadow {
+  @apply shadow-md shadow-green-900/5;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary/90 text-white rounded-full py-3 px-6 font-medium shadow-md shadow-green-900/10 transition-all;
+}
+
+.btn-secondary {
+  @apply bg-white hover:bg-gray-50 text-primary border border-gray-200 rounded-full py-3 px-6 font-medium shadow-md shadow-green-900/5 transition-all;
+}
+
