@@ -19,9 +19,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head />
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <main className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">{children}</main>
           <Toaster position="top-center" />
         </ThemeProvider>
@@ -29,7 +30,3 @@ export default function RootLayout({
     </html>
   )
 }
-
-
-
-import './globals.css'
