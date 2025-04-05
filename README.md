@@ -41,7 +41,26 @@ Before you begin, ensure you have the following installed on your system:
 
       ```bash
       npm install
+      npm install react-day-picker@9.6.4 vaul@1.1.2
       ```
+## Dependency Management
+
+### Required Package Versions
+
+This project uses React 19.1.0 and requires specific versions of certain packages for compatibility:
+
+- react-day-picker@9.6.4 or newer
+- vaul@1.1.2 or newer
+- date-fns@4.1.0
+
+### Installation Instructions
+
+To ensure you install the correct dependencies:
+
+1. Install the project dependencies with the correct package versions:
+   ```bash
+   npm install
+   npm install react-day-picker@9.6.4 vaul@1.1.2      
 
    ---
 
@@ -59,7 +78,6 @@ Before you begin, ensure you have the following installed on your system:
 
    To run the project, ensure the following environment variables are set in your `.env` file:
 
-   - **DATABASE_URL**: The connection string for your PostgreSQL database.
    - **SUPABASE_URL**: The URL of your Supabase instance.
    - **SUPABASE_ANON_KEY**: The public API key for your Supabase project.
    - **SUPABASE_SERVICE_ROLE_KEY**: The service role key for your Supabase project.
