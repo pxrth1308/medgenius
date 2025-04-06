@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -9,9 +9,35 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 
+// Separate component that uses searchParams
+function LocalhostRedirect() {
+  const searchParams = useSearchParams()
+  const isLocalhost = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+
+  if (!isLocalhost || !searchParams.has('token')) {
+    return null
+  }
+
+  return (
+    <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-lg">
+      <h3 className="font-medium text-amber-800 mb-2">Redirecting from local environment</h3>
+      <p className="text-sm text-amber-700 mb-3">
+        It looks like you clicked a verification link that points to a local environment. 
+        Click the button below to complete verification on our production site.
+      </p>
+      <a 
+        href={`https://medgenius-demo.vercel.app/auth/verify?${searchParams.toString()}`}
+        className="flex items-center justify-center w-full p-2 rounded-lg bg-amber-100 text-amber-800 hover:bg-amber-200"
+      >
+        Complete verification <ExternalLink className="ml-2 h-4 w-4" />
+      </a>
+    </div>
+  )
+}
+
 export default function VerifyEmail() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [countdown, setCountdown] = useState(59)
   const [canResend, setCanResend] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -204,21 +230,9 @@ export default function VerifyEmail() {
                 If you continue to experience issues, please contact our support team.
               </p>
               
-              {isLocalhost && searchParams.has('token') && (
-                <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-lg">
-                  <h3 className="font-medium text-amber-800 mb-2">Redirecting from local environment</h3>
-                  <p className="text-sm text-amber-700 mb-3">
-                    It looks like you clicked a verification link that points to a local environment. 
-                    Click the button below to complete verification on our production site.
-                  </p>
-                  <a 
-                    href={`https://medgenius-demo.vercel.app/auth/verify?${searchParams.toString()}`}
-                    className="flex items-center justify-center w-full p-2 rounded-lg bg-amber-100 text-amber-800 hover:bg-amber-200"
-                  >
-                    Complete verification <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </div>
-              )}
+              <Suspense fallback={<div className="mt-4 p-4 text-center text-amber-800">Loading redirect options...</div>}>
+                <LocalhostRedirect />
+              </Suspense>
             </div>
           </div>
         </div>
