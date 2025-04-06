@@ -4,14 +4,63 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
+import { toast } from "sonner"
 
 export default function VerifyEmail() {
   const router = useRouter()
   const [countdown, setCountdown] = useState(59)
   const [canResend, setCanResend] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState('')
+  const [errorState, setErrorState] = useState<string | null>(null)
 
+  // Get email from session storage
+  useEffect(() => {
+    try {
+      const storedEmail = sessionStorage.getItem('verificationEmail')
+      if (storedEmail) {
+        setEmail(storedEmail)
+        // Check if user is already verified
+        checkUserVerificationStatus(storedEmail)
+      } else {
+        console.log("No verification email found in session storage")
+        toast.error("No email address found. Redirecting to signup.")
+        // Redirect after a short delay to ensure the toast is seen
+        setTimeout(() => router.push('/auth/signup'), 1500)
+      }
+    } catch (error) {
+      console.error("Error accessing session storage:", error)
+      toast.error("Unable to access browser storage. Please enable cookies.")
+    }
+  }, [router])
+
+  // Check if user is already verified to redirect appropriately
+  const checkUserVerificationStatus = async (userEmail: string) => {
+    try {
+      const { data, error } = await supabase.auth.getSession()
+      
+      if (error) {
+        console.error("Session check error:", error.message)
+        return
+      }
+      
+      if (data?.session) {
+        const { data: userData } = await supabase.auth.getUser()
+        if (userData?.user?.email_confirmed_at) {
+          console.log("User already verified, redirecting to dashboard")
+          toast.success("Your email is already verified!")
+          setTimeout(() => router.push('/dashboard'), 1500)
+        }
+      }
+    } catch (error) {
+      console.error("Error checking verification status:", error)
+    }
+  }
+
+  // Countdown timer for resend button
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -27,10 +76,51 @@ export default function VerifyEmail() {
     return () => clearInterval(timer)
   }, [])
 
-  const handleResendCode = () => {
-    // In a real app, you would call the resend verification API
-    setCountdown(59)
-    setCanResend(false)
+  // Handle resend verification link
+  const handleResendVerification = async () => {
+    if (!canResend || !email) return
+    
+    setLoading(true)
+    setErrorState(null)
+    
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email
+      })
+      
+      if (error) {
+        console.error("Resend verification error:", error)
+        throw error
+      }
+
+      console.log("Verification email resent successfully to:", email)
+      toast.success("Verification link resent. Please check your email.")
+      setCountdown(59)
+      setCanResend(false)
+    } catch (error: any) {
+      console.error("Failed to resend verification email:", error)
+      
+      // Handle specific error cases
+      if (error.message?.includes('rate limit')) {
+        setErrorState("Too many attempts. Please try again later.")
+        toast.error("Rate limit exceeded. Please wait before trying again.")
+      } else if (error.message?.includes('network')) {
+        setErrorState("Network error. Please check your connection.")
+        toast.error("Network error. Please check your connection and try again.")
+      } else {
+        setErrorState(error.message || "Failed to resend verification link")
+        toast.error(error.message || "Failed to resend verification link")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Handle manual navigation to login
+  const goToLogin = () => {
+    console.log("User navigating to login")
+    router.push('/auth/login')
   }
 
   return (
@@ -54,42 +144,58 @@ export default function VerifyEmail() {
             />
           </div>
 
-          <h1 className="text-2xl font-bold mb-1 text-center">Code sent to email</h1>
-          <p className="text-gray-600 mb-8 text-center">
-            A verification code has been sent to your email. Please enter it to verify your profile.
+          <h1 className="text-2xl font-bold mb-3 text-center">Verify your email</h1>
+          
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
+            <p className="text-gray-700 text-center">
+              We've sent a verification link to <span className="font-medium">{email}</span>.
+              <br />Please check your inbox and click the link to verify your account.
+            </p>
+          </div>
+          
+          {errorState && (
+            <div className="bg-red-50 border border-red-100 rounded-lg p-3 mb-6">
+              <p className="text-red-600 text-sm text-center">{errorState}</p>
+            </div>
+          )}
+          
+          <p className="text-sm text-gray-500 mb-8 text-center">
+            After verification, you'll be able to access all features of the application.
           </p>
-
-          <div className="flex justify-center space-x-4 mb-8">
-            <div className="w-12 h-12 rounded-lg border-2 border-primary flex items-center justify-center text-xl font-bold">
-              8
+          
+          <div className="space-y-4">
+            <Button
+              variant="outline"
+              className="w-full h-12 rounded-xl"
+              disabled={!canResend || loading}
+              onClick={handleResendVerification}
+            >
+              {loading ? "Sending..." : !canResend 
+                ? `Resend link (${countdown.toString().padStart(2, "0")}s)` 
+                : "Resend verification link"
+              }
+            </Button>
+            
+            <div className="flex justify-center">
+              <Button
+                variant="ghost"
+                className="text-primary"
+                onClick={goToLogin}
+              >
+                Already verified? Log in here
+              </Button>
             </div>
-            <div className="w-12 h-12 rounded-lg border-2 border-primary flex items-center justify-center text-xl font-bold">
-              4
-            </div>
-            <div className="w-12 h-12 rounded-lg border-2 border-primary flex items-center justify-center text-xl font-bold">
-              3
-            </div>
-            <div className="w-12 h-12 rounded-lg border-2 border-primary flex items-center justify-center text-xl font-bold">
-              1
+            
+            <div className="border-t border-gray-200 pt-4 mt-4">
+              <p className="text-sm text-center text-gray-500">
+                Didn't receive an email? Check your spam folder or try resending the verification link.
+              </p>
+              
+              <p className="text-xs text-center text-gray-400 mt-2">
+                If you continue to experience issues, please contact our support team.
+              </p>
             </div>
           </div>
-
-          <p className="text-sm text-center text-gray-500 mb-6">
-            This OTP will be available during 00:{countdown.toString().padStart(2, "0")}sec
-          </p>
-
-          <Button className="w-full h-12 rounded-xl btn-primary mb-4" onClick={() => router.push("/dashboard")}>
-            Confirm
-          </Button>
-
-          <Button
-            variant="ghost"
-            className="w-full h-12 rounded-xl text-primary"
-            disabled={!canResend}
-            onClick={handleResendCode}
-          >
-            Resend code {!canResend && `(${countdown}s)`}
-          </Button>
         </div>
       </div>
     </div>

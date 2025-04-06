@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { supabase } from "@/lib/supabase/client"
 import { ArrowLeft, Eye, EyeOff } from "lucide-react"
 import { DeveloperLogin } from "@/components/developer-login"
+import { toast } from "sonner"
 
 export default function Login() {
   const router = useRouter()
@@ -28,14 +29,33 @@ export default function Login() {
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (error) throw error
+      
+      // Check if email is confirmed
+      if (!data.user?.email_confirmed_at) {
+        // Store email in session storage for verification page
+        sessionStorage.setItem('verificationEmail', email)
+        
+        // Send a new verification email
+        await supabase.auth.resend({
+          type: 'signup',
+          email
+        })
+        
+        toast.warning("Your email is not verified. A new verification email has been sent.")
+        router.push("/auth/verify")
+        return
+      }
+
+      toast.success("Login successful!")
       router.push("/dashboard")
     } catch (error: any) {
+      toast.error(error.message || "Failed to log in")
       setError(error.message || "Failed to log in")
     } finally {
       setLoading(false)

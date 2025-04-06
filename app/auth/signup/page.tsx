@@ -1,15 +1,14 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { supabase } from "@/lib/supabase/client"
 import { ArrowLeft, Eye, EyeOff, Check } from "lucide-react"
+import { toast } from "sonner"
 import { DeveloperLogin } from "@/components/developer-login"
 
 export default function Signup() {
@@ -46,8 +45,14 @@ export default function Signup() {
       })
 
       if (error) throw error
+      
+      // Store email in session storage to use on verification page
+      sessionStorage.setItem('verificationEmail', email)
+      
+      toast.success("Signup successful! Check your email for verification code.")
       router.push("/auth/verify")
     } catch (error: any) {
+      toast.error(error.message || "Failed to sign up")
       setError(error.message || "Failed to sign up")
     } finally {
       setLoading(false)
