@@ -3,19 +3,28 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 
 export default function VerifyEmail() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [countdown, setCountdown] = useState(59)
   const [canResend, setCanResend] = useState(false)
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [errorState, setErrorState] = useState<string | null>(null)
+  const [isLocalhost, setIsLocalhost] = useState(false)
+
+  // Check if running on localhost
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsLocalhost(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    }
+  }, [])
 
   // Get email from session storage
   useEffect(() => {
@@ -194,6 +203,22 @@ export default function VerifyEmail() {
               <p className="text-xs text-center text-gray-400 mt-2">
                 If you continue to experience issues, please contact our support team.
               </p>
+              
+              {isLocalhost && searchParams.has('token') && (
+                <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-lg">
+                  <h3 className="font-medium text-amber-800 mb-2">Redirecting from local environment</h3>
+                  <p className="text-sm text-amber-700 mb-3">
+                    It looks like you clicked a verification link that points to a local environment. 
+                    Click the button below to complete verification on our production site.
+                  </p>
+                  <a 
+                    href={`https://medgenius-demo.vercel.app/auth/verify?${searchParams.toString()}`}
+                    className="flex items-center justify-center w-full p-2 rounded-lg bg-amber-100 text-amber-800 hover:bg-amber-200"
+                  >
+                    Complete verification <ExternalLink className="ml-2 h-4 w-4" />
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
