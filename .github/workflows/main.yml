@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, x64-large]
 
     steps:
       - name: Checkout code
@@ -32,6 +32,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://example.supabase.co' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}
           NEXT_PUBLIC_DEVELOPER_CODE: ${{ secrets.NEXT_PUBLIC_DEVELOPER_CODE || 'development' }}
+          NODE_OPTIONS: '--max_old_space_size=4096'
 
       # Add test step when you have tests
       # - name: Run tests
